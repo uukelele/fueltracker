@@ -4,12 +4,16 @@ from fastapi import FastAPI
 
 import os
 
+from . import data, models
+
 app = FastAPI(root_path='/api')
 
-ephaptic = Ephaptic.from_app(app, path='/_ws', redis_url=os.getenv('REDIS_URL'))
+REDIS_URL = os.getenv('REDIS_URL')
+
+ephaptic = Ephaptic.from_app(app, path='/_ws', redis_url=REDIS_URL)
 
 api = Router(ephaptic, prefix='/v1')
 
-@api.get('/')
-async def index():
-    return {"status": "ok"}
+@api.get('/records')
+async def records() -> list[models.ForecourtRecord]:
+    return await data.fetch_data()
