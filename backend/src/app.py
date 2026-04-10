@@ -17,3 +17,5 @@ api = Router(ephaptic, prefix='/v1')
 @api.get('/records')
 async def records() -> list[models.ForecourtRecord]:
     return await data.fetch_data()
+
+app.include_router(api)
