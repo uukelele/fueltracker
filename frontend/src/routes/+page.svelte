@@ -111,6 +111,7 @@
                     iconSize: [60, 50],
                     iconAnchor: [30, 50],
                     popupAnchor: [0, -50],
+                    className: 'price-marker-icon',
                 }));
 
                 // marker.on('mouseover', e => { e.target.openPopup(); });
