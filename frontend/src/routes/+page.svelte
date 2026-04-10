@@ -12,8 +12,9 @@
     import type { ForecourtRecord } from "$lib/schema";
     import MapPopup from "$lib/components/MapPopup.svelte";
     
-    import type { Map } from "leaflet";
+    import { type Map } from "leaflet";
     import { type BankHolidayRoot, getBankHolidays } from "$lib/holidays";
+    import { createPriceIcon, getPriceColour } from "$lib/utils";
 
 
     let forecourts = $state<ForecourtRecord[]>([]);
@@ -63,21 +64,54 @@
         forecourts = await client.records();
         holidays = await getBankHolidays();
 
+        const allValues = forecourts
+            .map(f => {
+                const p = f.forecourts.fuel_price.E10;
+                const d = f.forecourts.fuel_price.B7S;
+                if (p && d) return (p + d) / 2;
+                return p || d || null;
+            })
+            .filter((p): p is number => p !== null && p > 0)
+            .sort((a, b) => a - b);
+        
+        const minPrice = allValues[Math.floor(allValues.length * 0.1)] || allValues[0];
+        const maxPrice = allValues[Math.floor(allValues.length * 0.9)] || allValues[allValues.length - 1];
+
         forecourts.forEach(item => {
             const loc = item.forecourts.location;
             if (loc.latitude && loc.longitude) {
                 const marker = L.marker([loc.latitude, loc.longitude]);
+
+                const petrol = item.forecourts.fuel_price.E10;
+                const diesel = item.forecourts.fuel_price.B7S;
+
+                let avgPrice: number | null = null;
+                if (petrol && diesel) avgPrice = (petrol + diesel) / 2;
+                else avgPrice = petrol || diesel || null;
+
+                const colour = getPriceColour(avgPrice, minPrice, maxPrice);
 
                 marker.bindPopup(() => {
                     const container = document.createElement('div');
 
                     mount(MapPopup, {
                         target: container,
-                        props: { record: item, holidays }
+                        props: {
+                            record: item,
+                            holidays,
+                            priceColour: colour,
+                        }
                     });
 
                     return container;
                 });
+
+                marker.setIcon(L.icon({
+                    iconUrl: createPriceIcon(item.forecourts.fuel_price.E10, item.forecourts.fuel_price.B7S, colour),
+                    iconSize: [60, 50],
+                    iconAnchor: [30, 50],
+                    popupAnchor: [0, -50],
+                }));
 
                 // marker.on('mouseover', e => { e.target.openPopup(); });
                 // marker.on('mouseout', e => { e.target.closePopup(); });

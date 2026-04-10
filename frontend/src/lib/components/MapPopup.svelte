@@ -6,9 +6,10 @@
 	interface Props {
 		record: ForecourtRecord;
         holidays: BankHolidayRoot | null;
+        priceColour: string;
 	}
 
-	const { record, holidays }: Props = $props();
+	const { record, holidays, priceColour }: Props = $props();
 
 	const f = record.forecourts;
 	const prices = f.fuel_price;
@@ -72,12 +73,12 @@
 			<div class="label">PETROL</div>
 			<div class="price-row">
 				<span class="type">E10</span>
-				<span class="value">{formatPrice(prices.E10)}</span>
+				<span class="value" style:color={priceColour}>{formatPrice(prices.E10)}</span>
 			</div>
 			{#if prices.E5}
 				<div class="price-row premium">
 					<span class="type">E5 (Prem)</span>
-					<span class="value">{formatPrice(prices.E5)}</span>
+					<span class="value" style:color={priceColour}>{formatPrice(prices.E5)}</span>
 				</div>
 			{/if}
 		</div>
@@ -86,12 +87,12 @@
 			<div class="label">DIESEL</div>
 			<div class="price-row">
 				<span class="type">B7</span>
-				<span class="value">{formatPrice(prices.B7S)}</span>
+				<span class="value" style:color={priceColour}>{formatPrice(prices.B7S)}</span>
 			</div>
 			{#if prices.B7P}
 				<div class="price-row premium">
 					<span class="type">B7 (Prem)</span>
-					<span class="value">{formatPrice(prices.B7P)}</span>
+					<span class="value" style:color={priceColour}>{formatPrice(prices.B7P)}</span>
 				</div>
 			{/if}
 		</div>
@@ -111,6 +112,7 @@
 			{#if f.amenities.air_pump_or_screenwash}
 				<span title="Air/Water">💨 Air</span>
 			{/if}
+            <a href={`https://www.google.com/maps/dir/?api=1&destination=${f.location.latitude},${f.location.longitude}`}>Get Directions</a>
 		</div>
 		{#if record.forecourt_update_timestamp}
 			<div class="updated">
@@ -213,11 +215,9 @@
 	.value {
 		font-size: 1.1rem;
 		font-weight: 800;
-		color: #e67e22; /* Fuel orange */
 	}
 
 	.premium .value {
-		color: #d35400;
         font-size: 1rem;
         font-weight: 600;
 	}
