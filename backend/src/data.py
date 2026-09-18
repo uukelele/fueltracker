@@ -11,7 +11,7 @@ import redis.asyncio as redis
 from . import models
 
 URL = "https://www.fuel-finder.service.gov.uk/internal/v1.0.2/csv/generate-presigned-url"
-SECRET = "8762dae892591b98df04f6badb39550ded3aec52e1227f816367af8d3064ba22"
+SECRET = "wAndRKxKefFpcuAMQyObcik5zkthu80KcrvK7av3oXCUeyjm3HyzZUuFvR9UN97Kd6jGJANMU9K3TITw1dCPLc"
 
 REDIS_URL = os.getenv('REDIS_URL')
 client = redis.from_url(REDIS_URL)
